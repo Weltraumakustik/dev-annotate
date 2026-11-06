@@ -1,0 +1,43 @@
+{
+  "name": "dev-annotate",
+  "version": "0.1.0",
+  "description": "Floating dev bar to pick elements, pin notes and draw on your running app, then hand the result to Claude Code, Codex or any coding agent.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "dev-annotate": "./cli.mjs"
+  },
+  "exports": {
+    ".": "./vite.mjs",
+    "./vite": "./vite.mjs",
+    "./overlay": "./overlay.js"
+  },
+  "files": [
+    "overlay.js",
+    "server.mjs",
+    "vite.mjs",
+    "cli.mjs",
+    "skill",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "claude-code",
+    "codex",
+    "annotate",
+    "feedback",
+    "vite-plugin",
+    "devtools"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "author": "Dennis Mader",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Weltraumakustik/dev-annotate.git"
+  }
+}
