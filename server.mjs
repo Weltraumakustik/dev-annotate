@@ -52,7 +52,12 @@ export function createHandler({ dir, cwd = process.cwd(), allowedHosts = [] }) {
     if (url === "/__annotate/overlay.js" && req.method === "GET") {
       res.setHeader("Content-Type", "text/javascript; charset=utf-8");
       res.setHeader("Cache-Control", "no-store");
-      return res.end(await readFile(OVERLAY));
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      try {
+        return res.end(await readFile(OVERLAY));
+      } catch {
+        return send(res, 500, { error: "overlay unavailable" });
+      }
     }
     if (url === "/__annotate/ping") return send(res, 200, { ok: true, dir: shown("") || "." });
     if (url === "/__annotate/save" && req.method === "POST") {
@@ -71,7 +76,11 @@ export function createHandler({ dir, cwd = process.cwd(), allowedHosts = [] }) {
         !pngs.every((p) => typeof p === "string" && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(p))
       )
         return send(res, 400, { error: "bad payload" });
-      return send(res, 200, save(outDir, json, pngs, shown));
+      try {
+        return send(res, 200, save(outDir, json, pngs, shown));
+      } catch {
+        return send(res, 500, { error: "could not save" });
+      }
     }
     return send(res, 404, { error: "not found" });
   };
@@ -130,5 +139,6 @@ function readBody(req) {
 function send(res, status, data) {
   res.statusCode = status;
   res.setHeader("Content-Type", "application/json");
+  res.setHeader("X-Content-Type-Options", "nosniff");
   res.end(JSON.stringify(data));
 }

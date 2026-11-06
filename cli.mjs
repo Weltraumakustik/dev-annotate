@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // dev-annotate init  [--claude] [--codex]   install the agent skill / AGENTS.md block
 // dev-annotate clean [--all] [--dir .annotate]   remove the latest annotations (--all: the history too)
-// dev-annotate clean [--all]\n  dev-annotate serve [--port 5178] [--dir .annotate]   standalone server for non-Vite setups
+// dev-annotate serve [--port 5178] [--dir .annotate]   standalone server for non-Vite setups
 import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
 import { dirname, join } from "node:path";
@@ -22,7 +22,7 @@ if (cmd === "init") init();
 else if (cmd === "clean") clean();
 else if (cmd === "serve") serve();
 else
-  console.log("Usage:\n  dev-annotate init [--claude] [--codex]\n  dev-annotate serve [--port 5178] [--dir .annotate]");
+  console.log("Usage:\n  dev-annotate init [--claude] [--codex]\n  dev-annotate clean [--all]\n  dev-annotate serve [--port 5178] [--dir .annotate]");
 
 function init() {
   const both = !flag("claude") && !flag("codex");
@@ -55,7 +55,11 @@ function clean() {
   const dir = join(process.cwd(), opt("dir", ".annotate"));
   if (!existsSync(dir)) return console.log("Nothing to clean.");
   const all = flag("all");
-  const doomed = readdirSync(dir).filter((f) => f !== ".gitignore" && (all || f.startsWith("latest")));
+  // Only ever remove files this tool wrote, never anything else in the folder.
+  const mine = all
+    ? /^(latest|\d{4}-\d\d-\d\dT[\d-]+Z)(-shot-\d+\.png|\.json)$/
+    : /^latest(-shot-\d+\.png|\.json)$/;
+  const doomed = readdirSync(dir).filter((f) => mine.test(f));
   for (const f of doomed) rmSync(join(dir, f), { force: true });
   console.log(
     `Removed ${doomed.length} file${doomed.length === 1 ? "" : "s"} from ${opt("dir", ".annotate")}/${all ? "" : " (history kept; use --all to remove it too)"}`,
