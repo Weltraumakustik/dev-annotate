@@ -4,6 +4,8 @@ A small bar for your running dev app. Pick elements, pin notes and draw on the p
 
 Dev only and local. Nothing is added to production builds.
 
+![dev-annotate demo](docs/demo.gif)
+
 ## Install
 
 ```sh

@@ -1,3 +1,6 @@
 node_modules/
 .annotate/
 .DS_Store
+.claude/
+.agents/
+skills-lock.json
